@@ -796,5 +796,19 @@ group by d,groups.name;
 select * from iyourcar_dw.dwd_all_action_hour_log
 where d='2020-07-14'
 and id =11340
-and get_json_object(args,'$.redirect_target') like '%89%'; 89
+and get_json_object(args,'$.redirect_target') like '%89%';
+
+--半年内每个月的新老用户下单人数
+select
+month(ordertime),
+count(distinct case when is_first_order=1 then uid end),
+count(distinct case when is_first_order=0 then uid end)
+from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10) between '2020-01-01' and '2020-07-31'
+and order_status in(1,2,3)
+and biz_type in(1,3)
+and all_price>0
+group by month(ordertime);
+
+
 
