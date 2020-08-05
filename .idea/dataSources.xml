@@ -7,5 +7,17 @@
       <jdbc-driver>com.cloudera.hive.jdbc41.HS2Driver</jdbc-driver>
       <jdbc-url>jdbc:hive2://hiveserver2-prod.suv163.com:10000</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="s1" uuid="0711eb07-538a-47f9-b732-d937ecd31b7c">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://mysql.repos.suv163.com:32361</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="s2" uuid="874f7f61-fb4a-42b0-837c-6a770945b8b2">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://mysql.repos.suv163.com:32362</jdbc-url>
+    </data-source>
   </component>
 </project>
