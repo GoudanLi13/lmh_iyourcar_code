@@ -80,16 +80,10 @@ on maps.uid=users.uid
 join
 (select distinct cid,d
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-08-02' and '2020-08-02'
+where d between '2020-08-04' and '2020-08-04'
 and id=316
 and ( get_json_object(args,'$.model_id') in(
-    '1#2',
-'1#3',
-'1#4',
-'1#5',
-'1#6',
-'1#7',
-'1#8') or split(get_json_object(args,'$.wx_page'),'_')[2]=4)) as visit
+    101,102) or split(get_json_object(args,'$.wx_page'),'_')[2]=4)) as visit
 on visit.cid=maps.cid;
 
 
