@@ -4,9 +4,9 @@ select count(distinct pcode.uid) as `第一批-激活人数-APP新用户`  from 
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-06-30' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-06-30';
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 --第二批
 -- 输出挪车码激活-APP新用户数据
@@ -14,18 +14,18 @@ select count(distinct pcode.uid) as `第二批-激活人数-APP新用户` from i
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-06-30' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid  like "1116%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-06-30';
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 --第三批
 -- 输出挪车码激活-APP新用户数据
 select count(distinct pcode.uid) as `第三批-激活人数-APP新用户` from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-06-30' and app_active.d >='2020-03-01'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-03-01'
 and pcode.uuid  like "0217%"
-and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-06-30';
+and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-07-31';
 
 
 -- 第一批
@@ -34,9 +34,9 @@ select distinct app_active.uid,app_active.d from iyourcar_dw.stage_all_service_d
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-06-30' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-06-30'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31'
 ),
 app_active_old_user as (
 select * from tmp.dwd_ycyh_user_day_app_active where d >= '2020-02-09'
@@ -159,9 +159,9 @@ select distinct app_active.uid,app_active.d from iyourcar_dw.stage_all_service_d
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-06-30' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid  like "1116%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-06-30'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31'
 ),
 app_active_old_user as (
 select * from tmp.dwd_ycyh_user_day_app_active where action_status = 2 and d >= '2020-02-09'
@@ -286,9 +286,9 @@ select distinct app_active.uid,app_active.d from iyourcar_dw.stage_all_service_d
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-06-30' and app_active.d >='2020-03-01'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-03-01'
 and pcode.uuid  like "0217%"
-and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-06-30'
+and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-07-31'
 ),
 app_active_old_user as (
 select * from tmp.dwd_ycyh_user_day_app_active where  d >= '2020-03-01'

@@ -2,12 +2,12 @@
 -- 整体
 select count(distinct uid) as `总激活人数`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code
-where active_time is not null and substr(active_time,0,10) between '2019-11-15' and '2020-05-31';
+where active_time is not null and substr(active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 -- 输出第一批挪车码激活情况数据
 select count(distinct uid) as `第一批激活人数`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code
-where uuid not like "1116%" and uuid not like "0217%" and active_time is not null and substr(active_time,0,10) between '2020-02-09' and '2020-05-31';
+where uuid not like "1116%" and uuid not like "0217%" and active_time is not null and substr(active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 -- 输出1115-0209第一批挪车码激活情况数据
 select count(distinct uid) as `1115-0209第一、二批激活人数`
@@ -18,12 +18,12 @@ and active_time is not null and substr(active_time,0,10) between '2019-11-15' an
 -- 输出第二批挪车码激活情况数据
 select count(distinct uid) as `第二批激活人数`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code
-where uuid like "1116%" and active_time is not null and substr(active_time,0,10) between '2020-02-09' and '2020-05-31';
+where uuid like "1116%" and active_time is not null and substr(active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 -- 输出第三批挪车码激活情况数据
 select count(distinct uid) as `第三批激活人数`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code
-where uuid like "0217%" and active_time is not null and substr(active_time,0,10) between '2020-03-01' and '2020-05-31';
+where uuid like "0217%" and active_time is not null and substr(active_time,0,10) between '2020-03-01' and '2020-07-31';
 
 
 -- 输出挪车码激活-APP新用户数据
@@ -31,8 +31,8 @@ select count(distinct pcode.uid) as `总激活人数APP新用户` from iyourcar_
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31';
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 
 -- 输出1115-0209第一、二批挪车码激活情况数据
@@ -52,35 +52,35 @@ select count(distinct pcode.uid) as `第一批-激活人数-APP新用户`  from 
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31';
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 --第二批
 -- 输出挪车码激活-APP新用户数据
 select count(distinct pcode.uid) as `第二批-激活人数-APP新用户` from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid  like "1116%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31';
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 --第三批
 -- 输出挪车码激活-APP新用户数据
 select count(distinct pcode.uid) as `第三批-激活人数-APP新用户` from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
 inner join
 tmp.dwd_ycyh_user_day_app_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-03-01'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-03-01'
 and pcode.uuid  like "0217%"
-and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-05-31';
+and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-07-31';
 
 -- 输出挪车码激活-小程序新用户数据
 select count(distinct pcode.uid) as `总激活人数-小程序新用户` from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
 inner join
 tmp.dwd_ycyh_user_day_wxapp_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31';
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 -- 输出1115-0209第一、二批挪车码激活情况数据
 select count(distinct pcode.uid) as `1115-0209第一、二批激活人数小程序新用户`
@@ -90,7 +90,7 @@ tmp.dwd_ycyh_user_day_wxapp_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 where pcode.active_time is not null and app_active.action_status = 1 and app_active.d between '2019-11-15' and '2020-02-08'
 and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-02-08'
-and uuid not like "0217%"
+and uuid not like "0217%";
 
 --第一批
 -- 输出挪车码激活-小程序新用户数据
@@ -98,9 +98,9 @@ select count(distinct pcode.uid) as `第一批激活人数-小程序新用户` f
 inner join
 tmp.dwd_ycyh_user_day_wxapp_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 --第二批
@@ -109,9 +109,9 @@ select count(distinct pcode.uid) as `第二批-激活人数-小程序新用户` 
 inner join
 tmp.dwd_ycyh_user_day_wxapp_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and pcode.uuid  like "1116%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 --第三批
 -- 输出挪车码激活-小程序新用户数据
@@ -119,9 +119,9 @@ select count(distinct pcode.uid) as `第三批-激活人数-小程序新用户` 
 inner join
 tmp.dwd_ycyh_user_day_wxapp_active  as app_active
 on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-03-01'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-03-01'
 and pcode.uuid  like "0217%"
-and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-05-31'
+and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-07-31';
 
 
 
@@ -132,10 +132,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2019-11-15'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2019-11-15'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 
 select count(distinct pcode.uid) as `总-APP新用户-下单人数统计`  from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
@@ -145,10 +145,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2019-11-15'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2019-11-15'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 
 
@@ -160,20 +160,20 @@ select sum(all_price)/100 as `all_GMV`  from iyourcar_dw.stage_all_service_day_i
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and substr(pcode.active_time,0,10) <= '2020-05-31'
+where pcode.active_time is not null and substr(pcode.active_time,0,10) <= '2020-07-31'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 
 select count(distinct pcode.uid) as `all_GMV_uid_count`   from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and substr(pcode.active_time,0,10) <= '2020-05-31'
+where pcode.active_time is not null and substr(pcode.active_time,0,10) <= '2020-07-31'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 
 -- 输出1115-0209挪车码激活人数GMV数据
@@ -186,10 +186,10 @@ as pcode
 inner join
 (select * from
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
-where substr(ordertime,0,10) <= '2020-05-31' and substr(ordertime,0,10) >= '2019-11-15'
+where substr(ordertime,0,10) <= '2020-07-31' and substr(ordertime,0,10) >= '2019-11-15'
 and order_status in (1,2,3)
 )as orders
-on pcode.uid = orders.uid
+on pcode.uid = orders.uid;
 
 select count(distinct pcode.uid) as `mixed_all_GMV_uid_count`  from
 (select * from
@@ -200,10 +200,10 @@ as pcode
 inner join
 (select * from
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
-where substr(ordertime,0,10) <= '2020-05-31' and substr(ordertime,0,10) >= '2019-11-15'
+where substr(ordertime,0,10) <= '2020-07-31' and substr(ordertime,0,10) >= '2019-11-15'
 and order_status in (1,2,3)
 )as orders
-on pcode.uid = orders.uid
+on pcode.uid = orders.uid;
 
 --第一批
 -- 输出挪车码激活-所有用户数据
@@ -213,8 +213,8 @@ iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
 where pcode.active_time is not null
 and orders.order_status in (1,2,3) and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 select count(distinct pcode.uid) as `1_all_GMV_uid_count`  from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
@@ -223,8 +223,8 @@ iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
 where pcode.active_time is not null
 and orders.order_status in (1,2,3) and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 
@@ -236,9 +236,9 @@ iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
 where pcode.active_time is not null
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
 and pcode.uuid  like "1116%"
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 
@@ -250,9 +250,9 @@ inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
 where pcode.active_time is not null
-and orders.order_status in (1,2,3) and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-03-01'
+and orders.order_status in (1,2,3) and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-03-01'
 and pcode.uuid  like "0217%"
-and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-05-31'
+and substr(pcode.active_time,0,10) between '2020-03-01' and '2020-07-31';
 
 
 
@@ -269,10 +269,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2019-11-15'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2019-11-15'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31';
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 
 --人数
@@ -283,10 +283,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2019-11-15'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2019-11-15'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
-and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-05-31';
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-07-31';
 
 -- 输出挪车码GMV-app新用户数据
 
@@ -299,7 +299,7 @@ iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
 where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-02-08' and app_active.d >='2019-11-15'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
 and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-02-08';
 
 
@@ -312,7 +312,7 @@ iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
 where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-02-08' and app_active.d >='2019-11-15'
 and orders.order_status in (1,2,3)
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2019-11-15'
 and substr(pcode.active_time,0,10) between '2019-11-15' and '2020-02-08';
 
 
@@ -325,10 +325,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and orders.order_status in (1,2,3) and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31';
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 select count(distinct pcode.uid) as `1_new_GMV_uid_count`  from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
@@ -338,10 +338,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and orders.order_status in (1,2,3) and pcode.uuid not like "1116%" and pcode.uuid not like "0217%"
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31';
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 
@@ -357,10 +357,10 @@ on pcode.uid = app_active.uid and substr(pcode.active_time,0,10) = app_active.d
 inner join
 iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order as orders
 on pcode.uid = orders.uid
-where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-05-31' and app_active.d >='2020-02-09'
+where pcode.active_time is not null and app_active.action_status = 1 and app_active.d <='2020-07-31' and app_active.d >='2020-02-09'
 and orders.order_status in (1,2,3) and pcode.uuid  like "1116%"
-and  substr(orders.ordertime,0,10) <= '2020-05-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
-and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-05-31';
+and  substr(orders.ordertime,0,10) <= '2020-07-31' and substr(orders.ordertime,0,10) >= '2020-02-09'
+and substr(pcode.active_time,0,10) between '2020-02-09' and '2020-07-31';
 
 
 ----跑到了这里！！！！！！
@@ -374,13 +374,13 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-02-09'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "1116%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-02-09'
-  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-07-31';
 
 
 --第三批
@@ -395,14 +395,14 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-03-01'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "0217%"
   and orders.order_status in (1, 2, 3)
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-03-01'
-  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-07-31';
 
 
 select count(distinct pcode.uid) as `3_new_GMV_uid_count`
@@ -415,14 +415,14 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-03-01'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "0217%"
   and orders.order_status in (1, 2, 3)
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-03-01'
-  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-07-31';
 
 
 
@@ -439,15 +439,15 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2019-11-15'
   and orders.order_status in (1, 2, 3)
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2019-11-15'
-  and substr(pcode.active_time, 0, 10) between '2019-11-15' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2019-11-15' and '2020-07-31';
 
 
-select sum(all_price) / 100 as `all_new_GMV_wxapp`
+select count(distinct pcode.uid) as `all_new_GMV_wxapp_uid_count`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
          inner join
      tmp.dwd_ycyh_user_day_wxapp_active as app_active
@@ -457,12 +457,12 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2019-11-15'
   and orders.order_status in (1, 2, 3)
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2019-11-15'
-  and substr(pcode.active_time, 0, 10) between '2019-11-15' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2019-11-15' and '2020-07-31';
 
 
 --小程序新用户
@@ -481,7 +481,7 @@ where pcode.active_time is not null
   and app_active.d <= '2020-02-08'
   and app_active.d >= '2019-11-15'
   and orders.order_status in (1, 2, 3)
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2019-11-15'
   and substr(pcode.active_time, 0, 10) between '2019-11-15' and '2020-02-08';
 
@@ -498,7 +498,7 @@ where pcode.active_time is not null
   and app_active.d <= '2020-02-08'
   and app_active.d >= '2019-11-15'
   and orders.order_status in (1, 2, 3)
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2019-11-15'
   and substr(pcode.active_time, 0, 10) between '2019-11-15' and '2020-02-08';
 --第一批
@@ -513,14 +513,14 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-02-09'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid not like "1116%"
   and pcode.uuid not like "0217%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-02-09'
-  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-07-31';
 
 select count(distinct pcode.uid) as `1_new_GMV_wxapp_uid_count`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
@@ -532,14 +532,14 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-02-09'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid not like "1116%"
   and pcode.uuid not like "0217%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-02-09'
-  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-07-31';
 
 --第二批
 -- 输出挪车码GMV-小程序新用户数据
@@ -553,13 +553,13 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-02-09'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "1116%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-02-09'
-  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-07-31';
 
 select count(distinct pcode.uid) as `2_new_GMV_wxapp_uid_count`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
@@ -571,13 +571,13 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-02-09'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "1116%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-02-09'
-  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-02-09' and '2020-07-31';
 --第三批
 -- 输出挪车码GMV-小程序新用户数据
 select sum(all_price) / 100 as `3_new_GMV_wxapp`
@@ -590,13 +590,13 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-03-01'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "0217%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-03-01'
-  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-07-31';
 
 select count(distinct pcode.uid) as `3_new_GMV_wxapp_uid_count`
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as pcode
@@ -608,10 +608,10 @@ from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_park_code as 
      on pcode.uid = orders.uid
 where pcode.active_time is not null
   and app_active.action_status = 1
-  and app_active.d <= '2020-06-30'
+  and app_active.d <= '2020-07-31'
   and app_active.d >= '2020-03-01'
   and orders.order_status in (1, 2, 3)
   and pcode.uuid like "0217%"
-  and substr(orders.ordertime, 0, 10) <= '2020-06-30'
+  and substr(orders.ordertime, 0, 10) <= '2020-07-31'
   and substr(orders.ordertime, 0, 10) >= '2020-03-01'
-  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-06-30';
+  and substr(pcode.active_time, 0, 10) between '2020-03-01' and '2020-07-31';
