@@ -968,3 +968,238 @@ join
 from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order_item where order_no='2568628472998003719') as item
 on orders.order_no=item.order_no
 ;
+
+select distinct source,uid,starttime
+         from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+         where source=4;
+
+select click.*,uid
+from tmp.new_user_free_vcard_cid_exposure_click as click
+left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+on click.cid=maps.cid
+where activity_id=4;
+
+;
+
+select args
+from iyourcar_dw.dwd_all_action_hour_log
+where d='2020-08-06'
+and id=12904;
+
+select *
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where uid in
+(
+    '1_5696e0030cf210966d7a4eba',
+'1_5b26f1f8e4b0deb403e89069',
+'1_5b2da778e4b042d2d18ef4ee',
+'1_5b3ac312e4b0a95379ee4559',
+'1_5b4ac73ae4b0cf964a4f5c5e',
+'2_56cf1be30cf246575d338341',
+'2_56d04c980cf28b4edceef4ca',
+'2_56d16c660cf28b4edcefda6e',
+'2_56ed456c0cf2c2ae4cbbf6cb',
+'2_57090a540cf2305151f11513',
+'2_57335dbe0cf2ffe0a27ca213',
+'2_575bc47f0cf2584bc5d5ed65',
+'2_576e133e0cf27ab0200665d2',
+'2_5b7ecb4fe4b00acd330d482b',
+'2_5b80dc46e4b0abec1e39fcf4',
+'2_5ba75089e4b03efcf442a839',
+'2_5bb8871ee4b0e5ff80b5468a',
+'2_5bd9dffce4b0ab014449390c',
+'2_5c0e479ce4b0f4ede3958950',
+'2_5c405244e4b074ae54c5ac15',
+'2_5c822fa3e4b0dd768e00cf14',
+'2_5cc5109ce4b008e9aa7c52ae',
+'2_5cc7980ae4b0ca35ec57705f',
+'2_5ce38881e4b0fcba58d10226',
+'2_5d0d988be4b000083011e187',
+'2_5d143a67e4b000d86bf907be',
+'2_5d172a9de4b0008bd54c7fec',
+'2_5d2b2c3ce4b000b580d5eaa0',
+'2_5d40e05ae4b0008da3fcf8c4',
+'2_5d53e02ce4b000852b08f891',
+'2_5d5f242de4b00024724be5bf',
+'2_5d83973ae4b0002a504577b5',
+'3_57d174bc0cf210e4f36fc4de',
+'3_57e67d420cf2d836bd9848f0',
+'3_5db1ffdce4b0004d130f1400',
+'3_5dc22f69e4b00040e7711388',
+'3_5def7b2ee4b000d2dd002c0f',
+'3_5dfdfb72e4b000d6fe95983b',
+'3_5e1fe48ce4b000cc0ca5a22f',
+'3_5e2eae61e4b000f4f90941b8',
+'3_5e4dda81e4b000cff30521da',
+'3_5e4e6af2e4b000f8d063e618',
+'3_5e5d0f4fe4b0001d518cb089',
+'3_5e756386e4b00025c4aeb07d',
+'3_5e7763b5e4b0003d25caa554',
+'3_5eb51de7e4b0003043a0e783',
+'3_5ee861a2e4b0003ba8a03290',
+'3_5efbcf92e4b00024df22b7a1',
+'3_5efbd19be4b0007c03abe8c3',
+'3_5efbfe50e4b0007c03abe8cc',
+'3_5f010e68e4b0004026f000e3',
+'3_5f0668b6e4b000729cac91ba',
+'3_5f086767e4b000671c70d5ae',
+'3_5f095bace4b000f3cff7e196',
+'3_5f0da97de4b000cbd2ea4214',
+'4_581db45e0cf26218b2a6fa29',
+'4_5826f97b0cf27acc6364181a',
+'4_582f82f80cf26218b2a7742d',
+'5_5858fe7ee4b0fd8cb4042071',
+'5_5872e252e4b0de8f86438329',
+'5_58934802e4b0bdaea0522da3',
+'5_58967d1de4b0bdaea0530170',
+'5_589c857be4b052378a50f5e9',
+'5_589dc38ce4b0bdaea053fa41',
+'5_58a6e6b8e4b0bdaea0545981',
+'5_58aed064e4b0bdaea054c296',
+'5_58b3981ae4b0bdaea0550a88',
+'6_58f5524ae4b08c7cc1a03022',
+'6_58fde578e4b08c7cc1a0d808',
+'6_5905e7bbe4b08c7cc1a16fa4',
+'6_5913a530e4b04d39f59a11b1',
+'6_59203164e4b05d14a11d936b',
+'6_592ac72ee4b055c32dfacdef',
+'6_593e55f6e4b04b5e6393d9c4',
+'6_5959ddc6e4b0f35e47faea29',
+'7_59657343e4b0bf17d76dd37c',
+'7_5992b8e4e4b0de48e72464b4',
+'7_59bdc9e9e4b079679e111feb',
+'7_59c10302e4b0e285ddf2e436',
+'7_59c1142fe4b02db41523eabf',
+'7_59ca42e3e4b0a42cd18a79da',
+'7_59d03e4ae4b0d6adbb0bcf38',
+'7_59d8880de4b0b847b1b48461',
+'7_59dc5516e4b01c5c7f522fbd',
+'7_59e899cee4b094e3c1a9ff37',
+'7_59f2eb18e4b0426764a0a378',
+'7_59fab6ade4b0eebfc017a2a1',
+'7_59fbb554e4b0a125a6f68bfe',
+'7_59fd00b7e4b010be6f6c252f',
+'7_5a2e0794e4b07914ec4faad2',
+'7_5a4908dde4b05931a33113d3',
+'7_5a51c37fe4b04aae84537fcd',
+'7_5a6acac7e4b0de442e6e34cc',
+'7_5a6c355be4b04fe00518392e',
+'7_5a6eb841e4b0de442e6e8758',
+'8_5a8a198ce4b02f263208acf9',
+'8_5a8c16f5e4b0670f40479231',
+'8_5a8e22afe4b07af57e37f7d5',
+'8_5a922cc5e4b03ff72010afbb',
+'8_5aa1c901e4b0860ce2907030',
+'8_5ab0fadde4b0c1afe5d420ac'
+    );
+
+select *
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where uid
+in (
+    '1_5ab6e69ee4b0099aaa9370c9',
+'1_5abf6c42e4b0b7b81435888f',
+'1_5ac80dbbe4b0febbbe6f5cf1',
+'1_5aec401ce4b0e18a8725b7b9',
+'1_5b35c017e4b00e7901dd7aa8',
+'1_5b383cc7e4b038adcf2c50d4',
+'1_5b4f5f3ce4b0e130901482f5',
+'1_5b6d6529e4b0b35db6c7ade6',
+'1_5b712ba1e4b0b35db6c7e4f9',
+'1_5b719faee4b099f70ffb9146',
+'2_56cd49140cf26f32187023d7',
+'2_56cd86aa0cf26f3218706277',
+'2_56ce95040cf22c32d0de5847',
+'2_56d042e90cf28b4edceed8e5',
+'2_56d2e7880cf28b4edcf0b182',
+'2_57075b7e0cf2305151f10d5f',
+'2_570993240cf2af575470dd89',
+'2_57333d870cf2ffe0a27ca19a',
+'2_574840d30cf22c8846272d8d',
+'2_5758119b0cf2584bc5d5b351',
+'2_57669bc40cf2584bc5d6b569',
+'2_576f1cea0cf27ab020067b83',
+'2_578b4fa60cf2fcb376921f04',
+'2_5b97c1fbe4b0b569367d8792',
+'2_5be96fa0e4b06fe3aefc2d69',
+'2_5c0662c0e4b0147a782826f9',
+'2_5c485119e4b096ab87943b6d',
+'2_5c57d59ee4b017d736cdc107',
+'2_5c5eb738e4b06f7749d0ad5b',
+'2_5c7900d4e4b04f8eb3a0e338',
+'2_5d039b09e4b0007f42f6c046',
+'2_5d418de6e4b000a80e523e01',
+'2_5d482516e4b0008da3fcfbfe',
+'2_5d72459ce4b000ad9e48a2b5',
+'3_57bc59290cf2d4cd10b6b14a',
+'3_57e124bf0cf23177d926a8ae',
+'3_57f053770cf22ed59810e81b',
+'3_57fc853a0cf22ed5981276b4',
+'3_5da7bb81e4b0008e8eaf7c80',
+'3_5db39835e4b0007fcaed21b2',
+'3_5dda86bde4b00090eb8add79',
+'3_5df5e13fe4b0007d892177a5',
+'3_5e4bf333e4b00091d8102a63',
+'3_5e564fb4e4b000e7cd19909d',
+'3_5e7b045ce4b000b047fa403d',
+'3_5e81da49e4b0003d25caa8b5',
+'3_5ec33df4e4b000a9e9d83110',
+'3_5ecb4235e4b000ed49acc648',
+'3_5ed26cc9e4b000c27e33cfb9',
+'3_5ee0f9e2e4b000542ce10ab8',
+'3_5ee592c3e4b000542ce10bca',
+'3_5ef29691e4b0009014bf882e',
+'3_5ef7eb6be4b0000d16bb12df',
+'3_5f01b297e4b000729cac90c8',
+'3_5f01e28de4b00084fc1d9626',
+'3_5f027241e4b0004026f00158',
+'3_5f03e5e4e4b0006930f89bd7',
+'3_5f097b5de4b0007c22728b76',
+'3_5f0c1823e4b000248be652b9',
+'4_58025c0b0cf22a717cef2333',
+'5_58913e4de4b0bdaea0514f00',
+'5_5895e0fee4b0bdaea052ec6f',
+'5_589fd5bae4b0bdaea0541935',
+'5_58a5b633e4b052378a515c90',
+'5_58abb133e4b0bdaea0549e14',
+'5_58beb7eae4b052378a529ab0',
+'6_58d50910e4b08c7cc19e6b87',
+'6_58d51095e4b08c7cc19e6c2a',
+'6_590dad78e4b07b3f07b04235',
+'6_59259efbe4b05d9fb1b5cd93',
+'7_595b92d5e4b00ac1d7e02f6e',
+'7_597d71eae4b056a6d264667d',
+'7_59a2cc58e4b0a688599e6a86',
+'7_59c6ef3ce4b0ade7f739a3b1',
+'7_59c7e026e4b0c63b8144a4a5',
+'7_59e0367fe4b047b0427661f4',
+'7_59ffd07fe4b0eebfc017e60d',
+'7_5a1953d1e4b035b7f536375d',
+'7_5a653be9e4b0dca0545fc45d',
+'7_5a68cf4fe4b079fc5935eb7f',
+'7_5a6913c7e4b036ff964b683b',
+'7_5a69824ce4b089230c1ff5bb',
+'7_5a746460e4b09a0edc7b7781',
+'8_5a8d8105e4b0747f04250c89'
+          )
+
+;
+
+select distinct d,ctype,cname
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-01' and '2020-08-06'
+and uid='2_56d16c660cf28b4edcefda6e';
+
+select *
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user
+where uid in('2_56d04c980cf28b4edceef4ca','1_5b3ac312e4b0a95379ee4559','2_56d16c660cf28b4edcefda6e');
+
+select *
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where uid in('2_56d04c980cf28b4edceef4ca','1_5b3ac312e4b0a95379ee4559','2_56d16c660cf28b4edcefda6e');
+
+select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d='2020-08-06'
+and id in(12904,12908)
+and uid='2_56d16c660cf28b4edcefda6e';
