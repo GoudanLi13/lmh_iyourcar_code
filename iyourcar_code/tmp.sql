@@ -1203,3 +1203,109 @@ from iyourcar_dw.dwd_all_action_hour_log
 where d='2020-08-06'
 and id in(12904,12908)
 and uid='2_56d16c660cf28b4edcefda6e';
+
+
+-----看8月8-9日的弹窗数据
+--各端弹窗曝光+点击人数
+        select
+        d,
+        ctype,
+        cname,
+        count(distinct case when id in(11510,11509,11511,11512) then cid end) as `曝光人数`,
+        count(distinct case when id in(11506,11505,11507,11508) then cid end) as `点击人数`
+        from iyourcar_dw.dwd_all_action_hour_log
+        where d between '2020-08-08' and '2020-08-09' and
+          id in(11510,11509,11511,11512,11506,11505,11507,11508)
+          and (
+                (ctype in (1, 2) and cname = 'APP_SUV' and get_json_object(args, '$.gid') = '511#2500')
+                or
+                (ctype = 4 and cname = 'WXAPP_YCYH_PLUS' and get_json_object(args, '$.gid') = '511#2500')
+                or
+                (ctype = 4 and cname = 'WXAPP_YCQKJ' and get_json_object(args, '$.gid') = '511#2501')
+            )
+        group by d, ctype, cname;
+
+select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-08' and '2020-08-09' and args like '%2501%';
+
+--各端下单人数+GMV
+--app端
+        select action.d,action.ctype,count(distinct action.uid ) as `下单人数`,sum(all_price/100) as `GMV` from
+        (
+            select distinct uid,d,ctype
+            from iyourcar_dw.dwd_all_action_hour_log
+            where id in (11505,11506)  and
+            d between '2020-08-08' and '2020-08-09' and
+            ctype in (1,2) and
+            get_json_object(args,"$.gid") = '511#2500'
+        ) as action
+        inner join
+        (
+            select substr(ordertime,0,10) as d,uid,ctype,all_price
+            from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+            where substr(ordertime,0,10) between '2020-08-08' and '2020-08-09' and
+                  ctype in (1,2) and
+                  order_status in (1,2,3) and
+                  biz_type in(1,3) and
+                  all_price>0
+        )as orders
+        on action.uid = orders.uid and action.d = orders.d and action.ctype=orders.ctype
+        group by action.d,action.ctype;
+
+--小程序端
+        select action.d,action.mall_type,count(distinct action.uid) as `下单人数`,sum(all_price/100) as `GMV` from
+        (
+            select distinct uid,d,case when cname='WXAPP_YCQKJ' then 2 else 1 end as mall_type
+            from iyourcar_dw.dwd_all_action_hour_log
+            where id in (11507,11508)  and
+            d between '2020-08-08' and '2020-08-09' and
+            ctype=4 and
+            get_json_object(args,"$.gid") in('511#2500','511#2501')
+        ) as action
+        inner join
+        (
+            select substr(ordertime,0,10) as d,uid,mall_type,all_price
+            from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+            where substr(ordertime,0,10) between '2020-08-08' and '2020-08-09' and
+                  ctype=4 and
+                  order_status in (1,2,3) and
+                  all_price>0 and
+                  biz_type in(1,3)
+        )as orders
+        on action.uid = orders.uid and action.d = orders.d and action.mall_type=orders.mall_type
+        group by action.d,action.mall_type;
+
+--每日输出昨日的看到车主秀tab的人数和下单人数
+select log.d as `日期`,spu as `商品id`,
+        count(distinct log.cid) as `看到车主秀的人数`,
+       count(distinct case when order_item.order_no is not null and log.st<order_item.st then order_no end) as `下单人数`
+from
+(select cid,st,d,get_json_object(args,'$.spu') as spu
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-09' and '2020-08-10'
+and id in(12576,12562)) as log
+left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+on log.cid=maps.cid
+left join
+(
+    select orders.*,item_id
+    from
+    (select uid,substr(ordertime,0,10) as d,order_no,unix_timestamp(ordertime)*1000 as st
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where substr(ordertime,0,10) between '2020-07-09' and '2020-08-10'
+        and biz_type in(1,3)
+        and ctype in(2,4)
+        and order_status in(1,2,3)
+        and all_price>0
+        and mall_type=1)
+    as orders
+    join
+    (
+    select order_no,item_id
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order_item) as item
+    on orders.order_no=item.order_no
+) as order_item
+on order_item.uid=maps.uid and log.d=order_item.d and order_item.item_id=log.spu
+group by log.d,spu
+;

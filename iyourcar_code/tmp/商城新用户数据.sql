@@ -37,11 +37,11 @@ group by visit.ctype;
 
 
 --2.付款占比
-select new_user.d,new_user.ctype,count(distinct new_user.cid)
+select new_user.d,count(distinct new_user.cid)
 from
 (select *
 from tmp.mall_new_user_cid_all_ctype_cname
-where d between '2020-08-01' and '2020-08-06'
+where d between '2020-08-01' and '2020-08-09'
 and ctype in(1,2)
 and cname='APP_SUV') as new_user
 join
@@ -56,15 +56,56 @@ join (
     and order_status in(1,2,3)
     and biz_type in(1,3)) as orders
 on maps.uid=orders.uid and orders.d=new_user.d and orders.ctype=new_user.ctype
-group by new_user.d,new_user.ctype;
+group by new_user.d;
+
+select d,count(distinct cid)
+from tmp.mall_new_user_cid_all_ctype_cname
+where d between '2020-08-01' and '2020-08-09'
+and ctype in(1,2)
+and cname='APP_SUV'
+group by d;
+
+--2.2 3天内付款占比
+select new_user.d,count(distinct new_user.cid)
+from
+(select *
+from tmp.mall_new_user_cid_all_ctype_cname
+where d between '2020-08-01' and '2020-08-09'
+and ctype in(1,2)
+and cname='APP_SUV') as new_user
+join
+iyourcar_dw.dws_extend_day_cid_map_uid as maps
+on maps.cid=new_user.cid
+join (
+    select uid,all_price,to_date(ordertime) as d,ctype
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where mall_type=1
+    and ctype in(1,2)
+    and all_price>0
+    and order_status in(1,2,3)
+    and biz_type in(1,3)) as orders
+on maps.uid=orders.uid and orders.ctype=new_user.ctype
+where orders.d between new_user.d and date_add(new_user.d,2)
+group by new_user.d;
 
 
 
 --3.详情页占比
-select
+select visit.d,count(visit.cid)
+from
+(select distinct d,cid,get_json_object(args,'$.spu')
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-08-01' and '2020-08-06'
-and id in()
+where d between '2020-08-01' and '2020-08-09'
+and id in(379,267)
+    ) as visit
+join
+    (select *
+from tmp.mall_new_user_cid_all_ctype_cname
+where d between '2020-08-01' and '2020-08-09'
+and ctype in(1,2)
+and cname='APP_SUV') as new_user
+on visit.d=new_user.d and new_user.cid=visit.cid
+group by visit.d;
 
 
 

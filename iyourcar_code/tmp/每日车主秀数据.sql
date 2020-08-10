@@ -1,9 +1,10 @@
 --历史无车主秀详情页访问(每月10日，24日更新）
 select
        get_json_object(log.args,'$.spu') as spu,
+       log.d,
        count(distinct case when c_ver<427000 or (c_ver>=427000 and st<times) or show.item_id is null then cid end) as unshow_user
 from (select * from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-06-21' and '2020-07-27'
+where d between '2020-06-21' and '2020-08-09'
 and ctype in(2,4)
 and cname in('WXAPP_YCYH_PLUS','APP_SUV')
 and id in(267,302,379)
@@ -216,18 +217,19 @@ left join
     and is_show=1
      ) as show
 on get_json_object(log.args,'$.spu')=show.item_id
-group by get_json_object(log.args,'$.spu');
+group by get_json_object(log.args,'$.spu'),log.d;
 
 --历史无车主秀详情页下单人数(每月10日，24日更新）
 select
 spu,
+d,
 count(distinct case when c_ver<427000 or times is null or (c_ver>=427000 and st<times)  then order_no end) as nushow_orcer
 from
-    (select items.item_id as spu,orders.order_no as order_no,orders.ctype as ctype,orders.st as st,times,max(c_ver) as c_ver
+    (select items.item_id as spu,orders.order_no as order_no,orders.ctype as ctype,orders.st as st,times,orders.d,max(c_ver) as c_ver
     from
          (  select order_no,ctype,uid,unix_timestamp(ordertime)*1000 as st,substr(ordertime,0,10) as d
             from  iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
-             where substr(ordertime,0,10) between '2020-06-21' and '2020-07-27'
+             where substr(ordertime,0,10) between '2020-06-21' and '2020-08-09'
              and order_status in(1,2,3)
              and ctype in(2,4)
              and all_price>0
@@ -442,7 +444,7 @@ from
         (
             select d,ctype,uid,c_ver,st
             from iyourcar_dw.dwd_all_action_hour_log
-            where d between '2020-06-21' and '2020-07-27'
+            where d between '2020-06-21' and '2020-08-09'
             and ctype in(2,4)
             and cname in('APP_SUV','WXAPP_YCYH_PLUS')
             ) as log
@@ -457,8 +459,8 @@ from
      ) as show
     on items.item_id=show.item_id
     where log.st<orders.st
-    group by items.item_id,orders.order_no,orders.ctype,orders.st,times) as a
-group by spu;
+    group by items.item_id,orders.order_no,orders.ctype,orders.st,times,orders.d) as a
+group by spu,d;
 
 --每日输出昨日的看到车主秀tab的人数和下单人数
 select log.d as `日期`,spu as `商品id`,

@@ -755,6 +755,3 @@ from iyourcar_dw.dwd_all_action_hour_log
 where d between '2020-07-10' and '2020-07-19'
 and id=12579;
 
---7月各端详情页转化率(每日的转化率，平均值）
-select
-from iyourcar_dw.dwd_all_action_hour_log

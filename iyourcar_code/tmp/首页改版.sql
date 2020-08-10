@@ -31,7 +31,7 @@ select d,get_json_object(args,'$.redirect_type'),get_json_object(args,'$.redirec
        count(distinct cid),
        count(distinct case when id=11339 then cid end)
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-08-05' and '2020-08-05'
+where d between '2020-08-05' and '2020-08-09'
 and id in(11339,11338)
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 group by d,get_json_object(args,'$.redirect_type'),get_json_object(args,'$.redirect_target');
@@ -56,7 +56,7 @@ select
        count(distinct cid),
        count(distinct case when (get_json_object(args,'$.redirect_type')=206 and get_json_object(args,'$.redirect_target')=734915) or id=11339 then cid end)
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-08-05' and '2020-08-05'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id in(11338,11339)
@@ -95,7 +95,7 @@ from
        get_json_object(args,'$.redirect_type'),
         get_json_object(args,'$.redirect_target') as page
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-07-21' and '2020-08-03'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id =11338) as log
@@ -122,7 +122,7 @@ select
        count(distinct cid),
        count(distinct case when id=11339 then cid end)
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-07-21' and '2020-08-03'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id in(11338,11339)
@@ -134,7 +134,7 @@ group by d;
 
 select d,avg(dif)
 from
-(select log_s.d,log_s.session,log_s.cid,(log_e.st-log_s.st)/1000 as dif
+(select log_s.d,log_s.session,log_s.cid,(log_e.st-log_s.st)/1000 as dif,row_number() over (partition by log_s.d,log_s.cid order by log_s.st) as rank
 from
 (select
        d,
@@ -163,7 +163,8 @@ group by d,cid,session
  ) as log_e
 on log_e.cid=log_s.cid and log_s.d=log_e.d and log_e.session=log_s.session
 where log_s.st<log_e.st
-group by log_s.d,log_s.session,log_s.cid) as a
+) as a
+where rank=1
 group by d
 ;
 
@@ -171,7 +172,7 @@ group by d
 
 select d,avg(dif)
 from
-(select log_s.d,log_s.session,log_s.cid,(log_e.st-log_s.st)/1000 as dif
+(select log_s.d,log_s.session,log_s.cid,(log_e.st-log_s.st)/1000 as dif,row_number() over (partition by log_s.d,log_s.cid order by log_s.st) as rank
 from
 (select
        d,
@@ -179,7 +180,7 @@ from
         session,
        min(st) as st
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-08-05' and '2020-08-05'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id =11338
@@ -192,14 +193,16 @@ join
         session,
        min(st) as st
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-08-05' and '2020-08-05'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id =11339
 group by d,cid,session
  ) as log_e
 on log_e.cid=log_s.cid and log_s.d=log_e.d and log_e.session=log_s.session
-where log_s.st<log_e.st) as a
+where log_s.st<log_e.st
+) as a
+where rank=1
 group by d
 ;
 
@@ -217,7 +220,7 @@ group by d;
 --新版本
 select d,count(distinct cid),count(cid)
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-07-21' and '2020-08-03'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id=11339
@@ -237,7 +240,7 @@ group by d;
 --新版本
 select d,count(distinct cid),count(case when id=11339 then cid end)
 from iyourcar_dw.dwd_all_action_hour_log
-where d between '2020-07-21' and '2020-08-03'
+where d between '2020-08-05' and '2020-08-09'
 and cname='WXAPP_YCYH_PLUS'
 and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id in(11338,11339)
@@ -260,6 +263,27 @@ left join
     select distinct d,cid,get_json_object(args,'$.spu') as spu
     from iyourcar_dw.dwd_all_action_hour_log
     where d between '2020-07-21' and '2020-08-03'
+    and cname='WXAPP_YCYH_PLUS'
+    and id=302
+    ) as detail
+on visit.cid=detail.cid and visit.d=detail.d
+group by visit.d
+;
+
+--新版本
+select visit.d,count(distinct visit.cid),count(detail.spu)
+from
+(select distinct d,cid
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-09'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id in(11338,11339)) as visit
+left join
+(
+    select distinct d,cid,get_json_object(args,'$.spu') as spu
+    from iyourcar_dw.dwd_all_action_hour_log
+    where d between '2020-08-05' and '2020-08-09'
     and cname='WXAPP_YCYH_PLUS'
     and id=302
     ) as detail
@@ -295,4 +319,33 @@ left join
 on maps.uid=orders.uid and visit.d=orders.d
 group by visit.d
 ;
+
+--新版本
+
+select visit.d,count(distinct visit.cid),sum(orders.all_price)/100
+from
+    (select distinct d,cid
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-09'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id in(11338,11339)) as visit
+left join
+iyourcar_dw.dws_extend_day_cid_map_uid as maps
+on maps.cid=visit.cid
+left join
+(
+    select uid,all_price,to_date(ordertime) as d
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where mall_type=1
+    and ctype=4
+    and all_price>0
+    and order_status in(1,2,3)
+    and biz_type in(1,3)
+    ) as orders
+on maps.uid=orders.uid and visit.d=orders.d
+group by visit.d
+;
+
+
 
