@@ -246,6 +246,55 @@ and split(get_json_object(args,'$.gid'),'#')[1]='734867'
 and id in(11338,11339)
 group by d;
 
+--1.7 点击金区的人数占比
+
+--旧版本
+select
+       d,
+       count(distinct cid),
+       count
+       (
+       distinct
+       case when
+        id=11338 or
+       (id=11339 and (
+       (get_json_object(args,'$.redirect_type')=520 and get_json_object(args,'$.redirect_target') in(5,6,7,47)) or
+        (get_json_object(args,'$.redirect_type')=501 and get_json_object(args,'$.redirect_target') in(28,89)) or
+        (get_json_object(args,'$.redirect_type')=206 and get_json_object(args,'$.redirect_target') in(333245,453041)) or
+       (get_json_object(args,'$.redirect_type')=511 and get_json_object(args,'$.redirect_target') in(446,1949,1974,2326))
+        )) then null else cid end
+       )
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-21' and '2020-08-03'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='416674'
+and id in(11338,11339)
+group by d;
+
+--新版本
+select
+       d,
+       count(distinct cid),
+       count
+       (
+       distinct
+       case when
+        id=11338 or
+       (id=11339 and (
+       (get_json_object(args,'$.redirect_type')=520 and get_json_object(args,'$.redirect_target') in(23,32,34,63)) or
+        (get_json_object(args,'$.redirect_type')=501 and get_json_object(args,'$.redirect_target') in(27,49)) or
+        (get_json_object(args,'$.redirect_type')=206 and get_json_object(args,'$.redirect_target') in(333245,733821)) or
+       (get_json_object(args,'$.redirect_type')=511 and get_json_object(args,'$.redirect_target') in(446,1949,1974,2326))
+        )) then null else cid end
+       )
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-09'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id in(11338,11339)
+group by d;
+
+
 --产品改版
 --2.1 人均详情页访问（有访问过首页的人,1人访问1个详情页就算1次）
 
