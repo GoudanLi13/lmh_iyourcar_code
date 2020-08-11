@@ -1309,3 +1309,66 @@ left join
 on order_item.uid=maps.uid and log.d=order_item.d and order_item.item_id=log.spu
 group by log.d,spu
 ;
+
+--导出近3个月内购物2次以上用户的uid和订单号和订单金额
+select orders.*
+from
+(select uid,order_no,substr(ordertime,0,10) as d,all_price
+from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10) between '2020-05-01' and '2020-08-10'
+and order_status in(1,2,3)
+and all_price>0
+and biz_type in(1,3)
+) as orders
+join
+(select uid
+from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10) between '2020-05-01' and '2020-08-10'
+and order_status in(1,2,3)
+and all_price>0
+and biz_type in(1,3)
+group by uid
+having count(order_no)>1) as user_list
+on user_list.uid=orders.uid;
+
+--push点击的数据
+select
+    from_type as type,
+    from_id as item_id,
+    concat(record_t.id) as record_id,
+    android_title,
+    android_desc,
+    ios_title,
+    ios_desc,
+    sum(andriod_click_users),
+    sum(ios_click_users)
+from (
+    select substr(ftime, 0, 10) as d, ftime, id, android_title, ios_title, from_id, android_desc, ios_desc,
+        case from_type when 1 then '资讯' when 2 then '帖子' when 3 then '口碑' when 4 then '话题' end as from_type
+    from iyourcar_dw.stage_all_service_day_iyourcar_push_record
+  where substr(ftime, 0, 10) between '2020-07-01' and '2020-08-10'
+    group by substr(ftime, 0, 10), ftime, id, android_title, ios_title, android_desc, ios_desc, from_id, from_type
+) as record_t
+join(
+    select
+        record_id,
+        count(distinct case when ctype=1 then CONCAT(record_id,ip) end) as ios_e_num,
+        count(distinct case when ctype=1 then ip end) as ios_click_users,
+        count(distinct case when ctype=2 then CONCAT(record_id,ip) end) as andriod_e_num,
+        count(distinct case when ctype=2 then ip end) as andriod_click_users
+    from iyourcar_dw.stage_all_service_day_iyourcar_push_record_stat_log
+    where substr(createtime, 0, 10) between '2020-07-01' and '2020-08-10'
+    group by record_id
+) as log_t on record_t.id=log_t.record_id
+group by
+from_type ,
+    from_id ,
+    concat(record_t.id),
+    android_title,
+    android_desc,
+    ios_title,
+    ios_desc;
+
+
+select *
+from iyourcar_dw.stage_all_service_day_iyourcar_push_record limit 100;

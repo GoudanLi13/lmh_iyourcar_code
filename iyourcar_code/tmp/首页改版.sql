@@ -347,5 +347,145 @@ on maps.uid=orders.uid and visit.d=orders.d
 group by visit.d
 ;
 
+------新用户
+--1.首页部分
+--1.1.跳失率（大型专题曝光或点击事件的人）
+--旧版本
+select
+       log.d,
+       count(distinct log.cid),
+       count(distinct case when (get_json_object(args,'$.redirect_type')=520 and get_json_object(args,'$.redirect_target')=1) or id=11339 then log.cid end)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-21' and '2020-08-03'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='416674'
+and id in(11338,11339)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+--新版本
 
 
+select
+       log.d,
+       count(distinct log.cid),
+       count(distinct case when (get_json_object(args,'$.redirect_type')=206 and get_json_object(args,'$.redirect_target')=734915) or id=11339 then log.cid end)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-10'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id in(11338,11339)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+
+
+--1.3 点击人数占比
+--旧版本
+select
+       log.d,
+       count(distinct log.cid),
+       count(distinct case when id=11339 then log.cid end)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-21' and '2020-08-03'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='416674'
+and id in(11338,11339)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+--新版本
+select
+       log.d,
+       count(distinct log.cid),
+       count(distinct case when id=11339 then log.cid end)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-10'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id in(11338,11339)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+--1.5.人均点击(有点击行为的人)
+
+--旧版本
+select
+       log.d,
+       count(distinct log.cid),
+       count(log.cid)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-21' and '2020-08-03'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='416674'
+and id=11339) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+--新版本
+
+select
+       log.d,
+       count(distinct log.cid),
+       count(log.cid)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-10'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id=11339) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+--1.6.人均点击(在首页有曝光或点击的人)
+
+--旧版本
+
+select
+       log.d,
+       count(distinct log.cid),
+       count(case when id=11339 then log.cid end)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-07-21' and '2020-08-03'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='416674'
+and id in(11338,11339)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
+
+--新版本
+
+select
+       log.d,
+       count(distinct log.cid),
+       count(case when id=11339 then log.cid end)
+from
+(select *
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-08-05' and '2020-08-10'
+and cname='WXAPP_YCYH_PLUS'
+and split(get_json_object(args,'$.gid'),'#')[1]='734867'
+and id in(11338,11339)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as new
+on new.cid=log.cid and new.d=log.d and log.ctype=new.ctype and log.cname=new.cname
+group by log.d;
