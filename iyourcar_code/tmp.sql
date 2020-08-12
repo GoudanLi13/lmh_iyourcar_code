@@ -1372,3 +1372,19 @@ from_type ,
 
 select *
 from iyourcar_dw.stage_all_service_day_iyourcar_push_record limit 100;
+
+
+
+select source,min(starttime)
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where source in(3,4,5,6)
+group by source;
+
+select source,min(starttime)
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where source in(2)
+group by source;
+
+
+drop table tmp.lmh_double_buy_user_second_order;
+select * from tmp.lmh_mall_push_list_active;

@@ -236,11 +236,63 @@ join iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user as users
 on vcard.uid=users.uid and substr(vcard.starttime,0,10)=substr(users.member_time,0,10)
 where substr(vcard.starttime,0,10)='{{ ds }}';
 
-------
-sources:
-  - iyourcar_dw.dwd_all_action_hour_log
-  - iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
-  - iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user
-targets:
-  - tmp.new_user_free_vcard_cid_exposure_click
-  - tmp.new_user_free_vcard_first_privilege
+---------------------------------------------------------
+--黑金卡赠送优化分析
+--1.用户抽离
+--1.1.8月6日-8月12日没有被赠送黑金卡的非黑金卡用户
+create table if not exists tmp.lmh_unpri_users_0812 as
+    select log.*
+    from
+    (select cid,ctype,d
+    from iyourcar_dw.dws_behavior_day_device_active
+    where d between '2020-08-06' and '2020-08-11'
+    and ctype in(1,2,4)
+    and cname in('APP_SUV','WXAPP_YCYH_PLUS')) as log
+    left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+    on maps.cid=log.cid
+    left join
+    (
+        select uid
+        from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user
+        where is_member in(1,2)
+        and member_type=2
+        ) as forever_pri
+    on maps.uid=forever_pri.uid
+    left join
+    (
+        select distinct uid
+        from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+        where substr(starttime,0,10) between '2020-08-06' and '2020-08-11'
+        or substr(endtime,0,10) >= '2020-08-06'
+        ) as vcard
+    on maps.uid=vcard.uid
+where forever_pri.uid is null and vcard.uid is null;
+
+--1.2.抽离6.11-6.17
+select
+from
+(select distinct cid,d,ctype
+from iyourcar_dw.dwd_all_action_hour_log
+    where d between '2020-06-21' and '2020-06-27'
+    and id in(12008,12009,12010)) as log
+left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+    on maps.cid=log.cid
+(select uid
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where substr(starttime,0,10) between '2020-06-21' and '2020-06-27');
+
+
+select substr(starttime,0,10),count(uid)
+from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+where source=2
+group by substr(starttime,0,10);
+
+
+select *
+from iyourcar_dw.rpt_ycyh_service_day_privilege_user_vcard_statistics;
+
+select
+from iyourcar_dw.stage_all_service_day_iyourcar_platform_post;
+
+select
+from iyourcar_dw.stage_all_service_day_iyourcar_platform_post_ref_car
