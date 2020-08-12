@@ -240,10 +240,11 @@ where substr(vcard.starttime,0,10)='{{ ds }}';
 --黑金卡赠送优化分析
 --1.用户抽离
 --1.1.8月6日-8月12日没有被赠送黑金卡的非黑金卡用户
+drop table tmp.lmh_unpri_users_0812;
 create table if not exists tmp.lmh_unpri_users_0812 as
-    select log.*
+    select log.cid,maps.uid
     from
-    (select cid,ctype,d
+    (select distinct cid
     from iyourcar_dw.dws_behavior_day_device_active
     where d between '2020-08-06' and '2020-08-11'
     and ctype in(1,2,4)
@@ -268,31 +269,124 @@ create table if not exists tmp.lmh_unpri_users_0812 as
     on maps.uid=vcard.uid
 where forever_pri.uid is null and vcard.uid is null;
 
---1.2.抽离6.11-6.17
-select
+--1.2.抽离6.11-6.17有曝光的赠卡用户
+drop table tmp.lmh_old_pri_users_0812;
+create table if not exists tmp.lmh_old_pri_users_0812 as
+select log.*,maps.uid
 from
-(select distinct cid,d,ctype
+(select distinct cid,d
 from iyourcar_dw.dwd_all_action_hour_log
     where d between '2020-06-21' and '2020-06-27'
     and id in(12008,12009,12010)) as log
 left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
     on maps.cid=log.cid
-(select uid
+ join
+(select uid,substr(starttime,0,10) as d
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
-where substr(starttime,0,10) between '2020-06-21' and '2020-06-27');
+where substr(starttime,0,10) between '2020-06-21' and '2020-06-27') as vcard
+on vcard.uid=maps.uid and vcard.d=log.d
+;
 
+select count(*) from tmp.lmh_old_pri_users_0812;
 
-select substr(starttime,0,10),count(uid)
-from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
-where source=2
-group by substr(starttime,0,10);
+--1.3把8月6日-8月12日的用户抽离
+drop table tmp.lmh_new_pri_users_0812;
+create table if not exists tmp.lmh_new_pri_users_0812 as
+    select log.*,vcard.uid,
+           case when exposure.cid is null then 1
+                when exposure.cid is not null and click.cid is null then 2
+                when click.cid is not null then 3 end as level,
+            exposure.source_type,
+           vcard.source
+    from
+    (select distinct cid,d
+    from iyourcar_dw.dws_behavior_day_device_active
+    where d between '2020-08-06' and '2020-08-11'
+    and ctype in(1,2,4)
+    and cname in('APP_SUV','WXAPP_YCYH_PLUS')) as log
+    join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+    on maps.cid=log.cid
+    join
+    (
+        select distinct uid,substr(starttime,0,10) as d,source
+        from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
+        where substr(starttime,0,10) between '2020-08-06' and '2020-08-11'
+        ) as vcard
+    on maps.uid=vcard.uid and vcard.d=log.d
+    left join
+    (
+        select cid,d,source_type
+        from
+        (select cid,d,get_json_object(args,'$.blackcard_source_type') as source_type,row_number() over (partition by cid,d order by st) as rank
+        from iyourcar_dw.dwd_all_action_hour_log
+        where d between '2020-08-06' and '2020-08-11'
+        and id in(12902,12903,12904)) as a
+        where rank=1
+        ) as exposure
+    on exposure.cid=log.cid and exposure.d=vcard.d
+    left join
+    (
 
+        select distinct cid,d
+        from iyourcar_dw.dwd_all_action_hour_log
+        where d between '2020-08-06' and '2020-08-11'
+        and id in(12906,12907,12908)
+        ) as click
+    on click.cid=log.cid;
 
-select *
-from iyourcar_dw.rpt_ycyh_service_day_privilege_user_vcard_statistics;
-
+--2.各类型用户7日转化率
+--2.1. 上一次赠卡的用户
 select
-from iyourcar_dw.stage_all_service_day_iyourcar_platform_post;
+count(distinct a.uid),
+count(distinct case when b.uid is not null and a.d<=b.d then b.uid end)
+from tmp.lmh_old_pri_users_0812 as a
+left join
+(
+    select uid,substr(ordertime,0,10) as d
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where substr(ordertime,0,10) between '2020-06-21' and '2020-06-27'
+    and all_price>0
+    and biz_type in(1,3)
+    and order_status in(1,2,3)
+    and mall_type=1
+    ) as b
+on a.uid=b.uid;
 
+--2.2.普通用户
 select
-from iyourcar_dw.stage_all_service_day_iyourcar_platform_post_ref_car
+count(distinct a.cid),
+count(distinct b.uid)
+from tmp.lmh_unpri_users_0812 as a
+left join
+(
+    select uid,substr(ordertime,0,10) as d
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-11'
+    and all_price>0
+    and biz_type in(1,3)
+    and order_status in(1,2,3)
+    and mall_type=1
+    ) as b
+on a.uid=b.uid;
+
+--2.3.优化赠送后用户
+select
+a.source,a.source_type,a.level,
+count(distinct a.cid),
+count(distinct case when b.uid is not null and a.d<=b.d then b.uid end)
+from tmp.lmh_new_pri_users_0812 as a
+left join
+(
+    select uid,substr(ordertime,0,10) as d
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-11'
+    and all_price>0
+    and biz_type in(1,3)
+    and order_status in(1,2,3)
+    and mall_type=1
+    ) as b
+on a.uid=b.uid
+group by a.source,a.source_type,a.level;
+
+--3.用户获得卡后进入用户占比
+
