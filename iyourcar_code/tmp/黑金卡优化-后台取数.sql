@@ -246,7 +246,7 @@ create table if not exists tmp.lmh_unpri_users_0812 as
     from
     (select distinct cid
     from iyourcar_dw.dws_behavior_day_device_active
-    where d between '2020-08-06' and '2020-08-11'
+    where d between '2020-08-06' and '2020-08-12'
     and ctype in(1,2,4)
     and cname in('APP_SUV','WXAPP_YCYH_PLUS')) as log
     left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
@@ -263,7 +263,7 @@ create table if not exists tmp.lmh_unpri_users_0812 as
     (
         select distinct uid
         from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
-        where substr(starttime,0,10) between '2020-08-06' and '2020-08-11'
+        where substr(starttime,0,10) between '2020-08-06' and '2020-08-12'
         or substr(endtime,0,10) >= '2020-08-06'
         ) as vcard
     on maps.uid=vcard.uid
@@ -276,14 +276,14 @@ select log.*,maps.uid
 from
 (select distinct cid,d
 from iyourcar_dw.dwd_all_action_hour_log
-    where d between '2020-06-21' and '2020-06-27'
+    where d between '2020-07-06' and '2020-07-12'
     and id in(12008,12009,12010)) as log
 left join iyourcar_dw.dws_extend_day_cid_map_uid as maps
     on maps.cid=log.cid
  join
 (select uid,substr(starttime,0,10) as d
 from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
-where substr(starttime,0,10) between '2020-06-21' and '2020-06-27') as vcard
+where substr(starttime,0,10) between '2020-07-06' and '2020-07-12') as vcard
 on vcard.uid=maps.uid and vcard.d=log.d
 ;
 
@@ -301,7 +301,7 @@ create table if not exists tmp.lmh_new_pri_users_0812 as
     from
     (select distinct cid,d
     from iyourcar_dw.dws_behavior_day_device_active
-    where d between '2020-08-06' and '2020-08-11'
+    where d between '2020-08-06' and '2020-08-12'
     and ctype in(1,2,4)
     and cname in('APP_SUV','WXAPP_YCYH_PLUS')) as log
     join iyourcar_dw.dws_extend_day_cid_map_uid as maps
@@ -310,7 +310,7 @@ create table if not exists tmp.lmh_new_pri_users_0812 as
     (
         select distinct uid,substr(starttime,0,10) as d,source
         from iyourcar_dw.stage_all_service_day_iyourcar_activity_privilege_user_vcard
-        where substr(starttime,0,10) between '2020-08-06' and '2020-08-11'
+        where substr(starttime,0,10) between '2020-08-06' and '2020-08-12'
         ) as vcard
     on maps.uid=vcard.uid and vcard.d=log.d
     left join
@@ -319,7 +319,7 @@ create table if not exists tmp.lmh_new_pri_users_0812 as
         from
         (select cid,d,get_json_object(args,'$.blackcard_source_type') as source_type,row_number() over (partition by cid,d order by st) as rank
         from iyourcar_dw.dwd_all_action_hour_log
-        where d between '2020-08-06' and '2020-08-11'
+        where d between '2020-08-06' and '2020-08-12'
         and id in(12902,12903,12904)) as a
         where rank=1
         ) as exposure
@@ -329,10 +329,31 @@ create table if not exists tmp.lmh_new_pri_users_0812 as
 
         select distinct cid,d
         from iyourcar_dw.dwd_all_action_hour_log
-        where d between '2020-08-06' and '2020-08-11'
+        where d between '2020-08-06' and '2020-08-12'
         and id in(12906,12907,12908)
         ) as click
     on click.cid=log.cid;
+
+--1.4 将'2020-07-06' and '2020-07-12' 、'2020-08-06' and '2020-08-12'访问过商城的用户抽离
+create table if not exists tmp.lmh_mall_user_0812 as
+select distinct cid,
+        case when d between '2020-07-06' and '2020-07-12' then 1
+            when d between '2020-08-06' and '2020-08-12' then 2 end as type
+from
+(select id,d,cid
+from iyourcar_dw.dwd_all_action_hour_log
+where (d between '2020-07-06' and '2020-07-12' or d between '2020-08-06' and '2020-08-12')
+     and ctype in(1,2,4)
+    and cname in('APP_SUV','WXAPP_YCYH_PLUS')) as log
+join
+(
+select event_id
+from iyourcar_dw.dwd_all_action_day_event_group
+    where event_group_id=20
+) as mall
+on log.id=mall.event_id;
+
+
 
 --2.各类型用户7日转化率
 --2.1. 上一次赠卡的用户
@@ -340,11 +361,13 @@ select
 count(distinct a.uid),
 count(distinct case when b.uid is not null and a.d<=b.d then b.uid end)
 from tmp.lmh_old_pri_users_0812 as a
+join (select * from tmp.lmh_mall_user_0812 where type=1) as c
+on a.cid=c.cid
 left join
 (
     select uid,substr(ordertime,0,10) as d
     from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
-    where substr(ordertime,0,10) between '2020-06-21' and '2020-06-27'
+    where substr(ordertime,0,10) between '2020-07-06' and '2020-07-12'
     and all_price>0
     and biz_type in(1,3)
     and order_status in(1,2,3)
@@ -352,16 +375,19 @@ left join
     ) as b
 on a.uid=b.uid;
 
+
 --2.2.普通用户
 select
 count(distinct a.cid),
 count(distinct b.uid)
 from tmp.lmh_unpri_users_0812 as a
+join (select * from tmp.lmh_mall_user_0812 where type=2) as c
+on a.cid=c.cid
 left join
 (
     select uid,substr(ordertime,0,10) as d
     from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
-    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-11'
+    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-12'
     and all_price>0
     and biz_type in(1,3)
     and order_status in(1,2,3)
@@ -375,11 +401,13 @@ a.source,a.source_type,a.level,
 count(distinct a.cid),
 count(distinct case when b.uid is not null and a.d<=b.d then b.uid end)
 from tmp.lmh_new_pri_users_0812 as a
+join (select * from tmp.lmh_mall_user_0812 where type=2) as c
+on a.cid=c.cid
 left join
 (
     select uid,substr(ordertime,0,10) as d
     from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
-    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-11'
+    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-12'
     and all_price>0
     and biz_type in(1,3)
     and order_status in(1,2,3)
@@ -388,5 +416,205 @@ left join
 on a.uid=b.uid
 group by a.source,a.source_type,a.level;
 
---3.用户获得卡后进入用户占比
+select
+a.source,a.source_type,a.level,
+count(distinct a.cid),
+count(distinct case when b.uid is not null and a.d<=b.d then b.uid end)
+from tmp.lmh_new_pri_users_0812 as a
+left join
+(
+    select uid,substr(ordertime,0,10) as d
+    from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+    where substr(ordertime,0,10) between '2020-08-06' and '2020-08-12'
+    and all_price>0
+    and biz_type in(1,3)
+    and order_status in(1,2,3)
+    and mall_type=1
+    ) as b
+on a.uid=b.uid
+group by a.source,a.source_type,a.level;
 
+--3.用户在首页获得卡后进入的占比
+--3.1.在首页领到卡的用户
+
+select count(distinct a.cid)
+from
+(select * from tmp.lmh_new_pri_users_0812 where source_type=1 and source in(3,4) and d between '2020-08-06' and '2020-08-09') as a
+join
+ (
+ select
+ distinct d,cid
+     from
+(select id,d,cid
+from iyourcar_dw.dwd_all_action_hour_log
+where  d between '2020-08-06' and '2020-08-12'
+     and ctype in(1,2,4)
+    and cname in('APP_SUV','WXAPP_YCYH_PLUS')) as log
+join
+(
+select event_id
+from iyourcar_dw.dwd_all_action_day_event_group
+    where event_group_id=20
+) as mall
+on log.id=mall.event_id) as b
+on a.cid=b.cid
+where b.d>=a.d;
+
+--4.产品留存
+--4.1.没得卡的人的留存
+--留存
+with c as
+    (select *
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12')
+
+select a.first_d,count(a.cid),count(c1.cid),count(c2.cid),count(c3.cid),count(c4.cid),count(c5.cid),count(c6.cid)
+from
+(select cid,min(d) as first_d
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12'
+group by cid) as a
+join tmp.lmh_unpri_users_0812 as b
+on a.cid=b.cid
+left join c as c1
+on c1.cid=a.cid and date_add(a.first_d,1)=c1.d
+left join c as c2
+on c2.cid=a.cid and date_add(a.first_d,2)=c2.d
+left join c as c3
+on c3.cid=a.cid and date_add(a.first_d,3)=c3.d
+left join c as c4
+on c4.cid=a.cid and date_add(a.first_d,4)=c4.d
+left join c as c5
+on c5.cid=a.cid and date_add(a.first_d,5)=c5.d
+left join c as c6
+on c6.cid=a.cid and date_add(a.first_d,6)=c6.d
+group by a.first_d
+;
+
+--4.2.以前获得卡的人
+--留存
+with c as
+    (select *
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-07-06' and '2020-07-12')
+
+select a.d,count(a.cid),count(c1.cid),count(c2.cid),count(c3.cid),count(c4.cid),count(c5.cid),count(c6.cid)
+from
+tmp.lmh_old_pri_users_0812 as a
+left join c as c1
+on c1.cid=a.cid and date_add(a.d,1)=c1.d
+left join c as c2
+on c2.cid=a.cid and date_add(a.d,2)=c2.d
+left join c as c3
+on c3.cid=a.cid and date_add(a.d,3)=c3.d
+left join c as c4
+on c4.cid=a.cid and date_add(a.d,4)=c4.d
+left join c as c5
+on c5.cid=a.cid and date_add(a.d,5)=c5.d
+left join c as c6
+on c6.cid=a.cid and date_add(a.d,6)=c6.d
+group by a.d
+;
+
+--4.3.现在有感知获卡的人
+--留存
+with c as
+    (select *
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12')
+
+select a.d,count(a.cid),count(c1.cid),count(c2.cid),count(c3.cid),count(c4.cid),count(c5.cid),count(c6.cid)
+from
+(select * from tmp.lmh_new_pri_users_0812 where level in(2,3) ) as a
+left join c as c1
+on c1.cid=a.cid and date_add(a.d,1)=c1.d
+left join c as c2
+on c2.cid=a.cid and date_add(a.d,2)=c2.d
+left join c as c3
+on c3.cid=a.cid and date_add(a.d,3)=c3.d
+left join c as c4
+on c4.cid=a.cid and date_add(a.d,4)=c4.d
+left join c as c5
+on c5.cid=a.cid and date_add(a.d,5)=c5.d
+left join c as c6
+on c6.cid=a.cid and date_add(a.d,6)=c6.d
+group by a.d
+;
+
+--4.4.流失用户
+--留存
+with c as
+    (select *
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12')
+
+select a.d,count(a.cid),count(c1.cid),count(c2.cid),count(c3.cid),count(c4.cid),count(c5.cid),count(c6.cid)
+from
+(select * from tmp.lmh_new_pri_users_0812 where level in(2,3) and source=4 ) as a
+left join c as c1
+on c1.cid=a.cid and date_add(a.d,1)=c1.d
+left join c as c2
+on c2.cid=a.cid and date_add(a.d,2)=c2.d
+left join c as c3
+on c3.cid=a.cid and date_add(a.d,3)=c3.d
+left join c as c4
+on c4.cid=a.cid and date_add(a.d,4)=c4.d
+left join c as c5
+on c5.cid=a.cid and date_add(a.d,5)=c5.d
+left join c as c6
+on c6.cid=a.cid and date_add(a.d,6)=c6.d
+group by a.d
+;
+
+--4.4.未购用户
+--留存
+with c as
+    (select *
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12')
+
+select a.d,count(a.cid),count(c1.cid),count(c2.cid),count(c3.cid),count(c4.cid),count(c5.cid),count(c6.cid)
+from
+(select * from tmp.lmh_new_pri_users_0812 where level in(2,3) and source=3 ) as a
+left join c as c1
+on c1.cid=a.cid and date_add(a.d,1)=c1.d
+left join c as c2
+on c2.cid=a.cid and date_add(a.d,2)=c2.d
+left join c as c3
+on c3.cid=a.cid and date_add(a.d,3)=c3.d
+left join c as c4
+on c4.cid=a.cid and date_add(a.d,4)=c4.d
+left join c as c5
+on c5.cid=a.cid and date_add(a.d,5)=c5.d
+left join c as c6
+on c6.cid=a.cid and date_add(a.d,6)=c6.d
+group by a.d
+;
+
+--全体用户
+--留存
+with c as
+    (select *
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12')
+
+select a.first_d,count(a.cid),count(c1.cid),count(c2.cid),count(c3.cid),count(c4.cid),count(c5.cid),count(c6.cid)
+from
+(select cid,min(d) as first_d
+from iyourcar_dw.dws_behavior_day_device_active
+where d between '2020-08-06' and '2020-08-12'
+group by cid) as a
+left join c as c1
+on c1.cid=a.cid and date_add(a.first_d,1)=c1.d
+left join c as c2
+on c2.cid=a.cid and date_add(a.first_d,2)=c2.d
+left join c as c3
+on c3.cid=a.cid and date_add(a.first_d,3)=c3.d
+left join c as c4
+on c4.cid=a.cid and date_add(a.first_d,4)=c4.d
+left join c as c5
+on c5.cid=a.cid and date_add(a.first_d,5)=c5.d
+left join c as c6
+on c6.cid=a.cid and date_add(a.first_d,6)=c6.d
+group by a.first_d
+;
