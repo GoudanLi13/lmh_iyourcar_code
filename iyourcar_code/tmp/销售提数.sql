@@ -6,7 +6,7 @@ from iyourcar_dw.stage_all_service_day_iyourcar_platform_post
 
 select *
 from iyourcar_dw.dws_prop_day_car_series
-where name like '%C-HR%';
+where name like '%缤智%';
 
 
 select * from iyourcar_dw.dws_prop_day_content;
@@ -19,7 +19,17 @@ select * from iyourcar_dw.stage_all_service_day_iyourcar_platform_post_ref_car;
 select count(distinct content_id)
 from iyourcar_dw.dws_prop_day_content
 where substr(create_time,0,10) between '2020-07-01' and '2020-07-31'
-and array_contains(car_series_ids,'1787')
+and array_contains(car_series_ids,'1792')
+and kind=2;
+
+select *
+from iyourcar_dw.dws_prop_day_content
+where title like '%实拍丰田CHR EV%';
+
+select count(distinct content_id)
+from iyourcar_dw.dws_prop_day_content
+where substr(create_time,0,10) between '2020-07-01' and '2020-07-31'
+and title like '%缤智%' or array_contains(car_series_ids,'1787')
 and kind=2;
 
 select count(content_id)
