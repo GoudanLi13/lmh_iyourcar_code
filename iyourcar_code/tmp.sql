@@ -1685,5 +1685,145 @@ group by d,case when ctype = '1' then 'iOS'
 on visit.d = global_uv.d and visit.ctype = global_uv.ctype
 order by `日期` desc;
 
-select source_id
-from rpt_ycyh_service_day_privilege_user_vcard_statistics;
+select *
+from iyourcar_dw.rpt_ycyh_service_day_privilege_user_vcard_statistics;
+
+--这2个半月的两成转化
+--商城访问到详情页
+with visit_mall as
+         (
+select distinct ctype,cname,cid,d from iyourcar_dw.dwd_all_action_hour_log log
+join iyourcar_dw.dwd_all_action_day_event_group event_group
+on log.id=event_group.event_id
+where log.d between '2020-06-01' and  '2020-08-13' and event_group.event_group_id=20
+)
+
+
+
+(select distinct cid,ctype,cname
+    from (select * from iyourcar_dw.dwd_all_action_hour_log where d  between '2020-06-01' and  '2020-08-13')  as action
+    inner join
+    (select event_id from iyourcar_dw.dwd_all_action_day_event_group where event_group_id  = 29) as e_group
+    on action.id = e_group.event_id
+            inner join
+        (
+            select id from iyourcar_dw.stage_all_service_day_iyourcar_mall_item_mall_item_info
+        ) as item_info
+        on get_json_object(action.args,"$.spu") = item_info.id
+ );
+
+--商城新老用户访问数
+select visit.ctype,visit.d,visit.cname,count(distinct visit.cid),count(distinct new.cid)
+from
+ (
+select distinct ctype,cname,cid,d from iyourcar_dw.dwd_all_action_hour_log log
+join iyourcar_dw.dwd_all_action_day_event_group event_group
+on log.id=event_group.event_id
+where log.d between '2020-06-01' and  '2020-08-13' and event_group.event_group_id=20
+) as visit
+left join
+     tmp.mall_new_user_cid_all_ctype_cname as new
+on visit.cname=new.cname and  visit.ctype=new.ctype and visit.cid=new.cid and new.d=visit.d
+group by visit.ctype,visit.d,visit.cname;
+
+--商城的新老用户详情页访问人数
+
+select visit.ctype,visit.d,visit.cname,count(distinct visit.cid),count(distinct new.cid)
+from
+ (
+select distinct d,cid,ctype,cname
+    from (select * from iyourcar_dw.dwd_all_action_hour_log where d  between '2020-06-01' and  '2020-08-13')  as action
+    inner join
+    (select event_id from iyourcar_dw.dwd_all_action_day_event_group where event_group_id  = 29) as e_group
+    on action.id = e_group.event_id
+
+) as visit
+left join
+     tmp.mall_new_user_cid_all_ctype_cname as new
+on visit.cname=new.cname and  visit.ctype=new.ctype and visit.cid=new.cid and new.d=visit.d
+group by visit.ctype,visit.d,visit.cname;
+
+
+--新老用户的各端下单人数
+select orders.ctype,orders.d,count(distinct orders.uid),count(distinct new.cid)
+from
+ (
+
+select distinct uid,ctype,substr(ordertime,0,10) as d from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10)  between '2020-06-01' and  '2020-08-13'  and order_status  in (1,2,3,5) and biz_type in (1,3) and all_price>0 and mall_type=1
+
+
+
+) as orders
+join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+on maps.uid=orders.uid
+left join
+     tmp.mall_new_user_cid_all_ctype_cname as new
+on orders.ctype=new.ctype and maps.cid=new.cid and new.d=orders.d
+group by orders.ctype,orders.d;
+
+--近2个月商城人均详情页条数
+select d,ctype,avg(spu)
+from
+(select log.d,log.ctype,log.cid,count(spu) as spu
+from
+(select distinct d,ctype,cid,get_json_object(args,'$.spu') as spu
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-06-01' and '2020-08-12'
+and id in(302,379,267)) as log
+join tmp.mall_new_user_cid_all_ctype_cname as news
+on news.ctype=log.ctype and news.cid=log.cid and news.d=log.d
+where news.cid is not null
+group by log.d,log.ctype,log.cid) as a
+group by d,ctype;
+
+select d,ctype,avg(spu)
+from
+(select log.d,log.ctype,log.cid,count(spu) as spu
+from
+(select distinct d,ctype,cid,get_json_object(args,'$.spu') as spu
+from iyourcar_dw.dwd_all_action_hour_log
+where d between '2020-06-01' and '2020-08-12'
+and id in(302,379,267)) as log
+left join tmp.mall_new_user_cid_all_ctype_cname as news
+on news.ctype=log.ctype and news.cid=log.cid and news.d=log.d
+where news.cid is null
+group by log.d,log.ctype,log.cid) as a
+group by d,ctype;
+
+--新用户GMV
+select orders.d,orders.ctype,sum(all_price)/100
+from
+(select substr(ordertime,0,10) as d,ctype,all_price,uid
+from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10) between '2020-08-01' and '2020-08-15'
+and all_price>0
+and order_status in(1,2,3)
+and mall_type=1
+and biz_type in(1,3)
+and ctype in(1,2)) as orders
+join iyourcar_dw.dws_extend_day_cid_map_uid as maps
+on maps.uid=orders.uid
+join tmp.mall_new_user_cid_all_ctype_cname as news
+on news.ctype=orders.ctype and news.cid=maps.cid and news.d=orders.d
+group by orders.d,orders.ctype;
+
+--下单人数
+select substr(ordertime,0,10),ctype,count(distinct uid)
+from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10) between '2020-08-01' and '2020-08-15'
+and all_price>0
+and order_status in(1,2,3)
+and mall_type=1
+and biz_type in(1,3)
+group by substr(ordertime,0,10),ctype;
+
+--客单价
+select substr(ordertime,0,10),ctype,sum(all_price)/100/count(distinct uid)
+from iyourcar_dw.stage_all_service_day_iyourcar_mall_order_mall_score_order
+where substr(ordertime,0,10) between '2020-06-16' and '2020-08-15'
+and all_price>0
+and order_status in(1,2,3)
+and mall_type=1
+and biz_type in(1,3)
+group by substr(ordertime,0,10),ctype;

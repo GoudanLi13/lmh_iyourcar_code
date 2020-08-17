@@ -8,9 +8,6 @@ import pandas as pd
 import time
 
 
-
-
-
 conn = hive.Connection(host='hiveserver2-prod.suv163.com',
                                   port=10000,
                                   username='liminghao',
@@ -38,27 +35,9 @@ for result in cursor.fetchall():
     except KeyError as e:
         list_1.append(-1)
     time.sleep(1)
-    #dict2=json.loads(dict['items'][0])
-    # list=dict['items']
-    # s=pd.DataFrame(list)
-    # print(dict(list))
 conn.close()
 s2=pd.Series(list_1)
 print(s2.value_counts())
-
-
-#
-#
-# def query(con, sql):
-#     with con.cursor() as cursor:
-#         cursor.execute(sql)
-#         return cursor.fetch()
-#
-# result = query(conn,sql)
-# print(result)
-
-
-
 
 
 #url = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify?charset=UTF-8&access_token=24.4a0df9c2b85457ef210e710f4aef73db.2592000.1599822375.282335-21958456'
